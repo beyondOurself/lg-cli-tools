@@ -6,12 +6,6 @@
   "scripts": {
     "prepare": "husky install"
   },
-   "lint-staged": {
-    "src/**": [
-      "eslint --fix",
-      "git add"
-    ]
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
