@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import inquirer from 'inquirer'
 import { execa } from 'execa';
 import chalk from 'chalk'
 import fs from 'fs'
@@ -11,14 +10,13 @@ import createCommitmsgTemplate from './createCommitmsgTemplate.js'
 import { copyDir } from './utils/index.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { json } from 'stream/consumers';
 const __dirname = fileURLToPath(import.meta.url)
-
-
 
 // 检查是否有 package.json 文件。 无 则是空目录,需要输入项目名称
 
 const existPackage = await fs.existsSync('./package.json')
+const exitstGit = await fs.existsSync('./.git')
+
 let destPackage = null 
 let sourcePackage = null 
 let projectName = ''
@@ -63,23 +61,36 @@ fs.writeFileSync('./package.json', destPackage )
 
 copyDir(path.resolve(__dirname, "../project"), "./" , (err) => {
     if (!err) {
-        fs.writeFileSync('./.husky/commit-msg', commitmsg.toString())
      }
+})
+
+// 初始化 git 
+if (!exitstGit) {
+    await execa("git init", {
+        cwd: './',
+        stdio: [2, 2, 2]
+    })
+}
+// 安装依赖
+await execa("npm install", {
+    cwd: './',
+    stdio: [2, 2, 2]
+})
+await execa("npx husky install", {
+    cwd: './',
+    stdio: [2, 2, 2]
+})
+// add pre-commit
+await execa('npx husky add .husky/pre-commit "npx lint-staged"', {
+    cwd: './',
+    stdio: [2, 2, 2]
+})
+// add commit-msg
+await execa('npx husky add .husky/commit-msg "npx --no -- commitlint --edit $1"', {
+    cwd: './',
+    stdio: [2, 2, 2]
 })
 
 
 
-
-// // 安装依赖
-// await execa("npm i", {
-//     cwd: rootPath,
-//     stdio: [2, 2, 2]
-// })
-
-execa([
-    'prepare',
-    'npx husky add .husky/pre-commit "npx lint-staged"'
-])
-
-// console.log(chalk.green(`进入${rootPath},执行 docs:dev`))
-// //  TODO
+//  TODO
