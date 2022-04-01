@@ -85,11 +85,14 @@ await execa('npx husky add .husky/pre-commit "npx lint-staged"', {
     cwd: './',
     stdio: [2, 2, 2]
 })
-// add commit-msg
-await execa('npx husky add .husky/commit-msg "npx --no -- commitlint --edit $1"', {
-    cwd: './',
-    stdio: [2, 2, 2]
-})
+
+if (answers.commitlint) {
+    // add commit-msg
+    await execa('npx husky add .husky/commit-msg "npx --no -- commitlint --edit $1"', {
+        cwd: './',
+        stdio: [2, 2, 2]
+    })
+}
 
 
 
