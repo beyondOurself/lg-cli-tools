@@ -1,0 +1,25 @@
+.readme-page_wrap{
+    .container_wrap{
+     background: pink;
+    }
+    .home-footer_wrap{
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+}
+
+:root{
+  --lg-main: #f8b751;
+  --lg-main-light:#f6c272;
+  --c-text-accent: var(--lg-main);
+  --back-to-top-color: var(--lg-main);
+  --back-to-top-color-hover: var(--lg-main);
+  --c-brand-light: var(--lg-main-light);
+  --c-brand: var(--lg-main);
+  --shiki-token-constant: var(--lg-main);
+}
+html.dark {
+  // brand colors
+  --c-brand: var(--lg-main);
+  --c-brand-light:var(--lg-main-light);
+  }

@@ -2,11 +2,8 @@
 import { execa } from 'execa';
 import chalk from 'chalk'
 import fs from 'fs'
-import questions from './questions/index.js';
 import nameQuestion from  './questions/nameQuestion.js'
 import createPackageTemplate from './createPackageTemplate.js'
-import createEslintrcTemplate from './createEslintrcTemplate.js'
-import createCommitmsgTemplate from './createCommitmsgTemplate.js'
 import { copyDir } from './utils/index.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -15,31 +12,19 @@ const __dirname = fileURLToPath(import.meta.url)
 // 检查是否有 package.json 文件。 无 则是空目录,需要输入项目名称
 
 const existPackage = await fs.existsSync('./package.json')
-const exitstGit = await fs.existsSync('./.git')
 
 let destPackage = null 
 let sourcePackage = null 
 let projectName = ''
 
 // 问答
-const answers = await questions()
 
 // 没有项目需要项目名称
 
 !existPackage && ({ name: projectName } = await nameQuestion())
 
-
-
 // 生成 eslintrc 文件
-
-const eslintrc = createEslintrcTemplate(answers)
-const packagejson = createPackageTemplate({ ...answers, projectName})
-const commitmsg = createCommitmsgTemplate(answers)
-
-
-
-
-fs.writeFileSync('./.eslintrc.js', eslintrc.toString())
+const packagejson = createPackageTemplate({ projectName})
 
 
 if (existPackage) {
@@ -49,7 +34,8 @@ if (existPackage) {
     sourcePackage = JSON.parse(readPackageFile.toString())
     const packagejsonParser = JSON.parse(packagejson)
     sourcePackage.devDependencies = { ...sourcePackage.devDependencies, ...packagejsonParser.devDependencies }
-    // sourcePackage.scripts.prepare = "husky install"
+    sourcePackage.scripts['docs:dev'] = "vuepress dev docs"
+    sourcePackage.scripts['docs:build'] = "vuepress build docs"
     destPackage = JSON.stringify(sourcePackage)
 } else {
     destPackage = packagejson
@@ -64,33 +50,18 @@ copyDir(path.resolve(__dirname, "../project"), "./" , (err) => {
      }
 })
 
-// 初始化 git 
-if (!exitstGit) {
-    await execa("git init", {
-        cwd: './',
-        stdio: [2, 2, 2]
-    })
-}
 // 安装依赖
 await execa("npm install", {
     cwd: './',
     stdio: [2, 2, 2]
 })
-await execa("npx husky install", {
-    cwd: './',
-    stdio: [2, 2, 2]
-})
-// add pre-commit
-await execa('npx husky add .husky/pre-commit "npx lint-staged"', {
-    cwd: './',
-    stdio: [2, 2, 2]
-})
-// add commit-msg
-await execa('npx husky add .husky/commit-msg "npx --no -- commitlint --edit $1"', {
-    cwd: './',
-    stdio: [2, 2, 2]
-})
 
+// 启动文档
+
+await execa("npx vuepress dev docs", {
+    cwd: './',
+    stdio: [2, 2, 2]
+})
 
 
 //  TODO

@@ -1,11 +1,8 @@
 # 常用的工具集合 
 
 
-## lg-cli-standards 
+## lg-cli-docs
 
-* 向项目集成 eslint prettier 和自动化 git 提交 代码格式;
+* vuepress 基本静态文档站;
+* github  action 自动部署
 
-
-## lg-cli-docs 
-
-* 使用 vuepress 构建的基本文档站结构;
