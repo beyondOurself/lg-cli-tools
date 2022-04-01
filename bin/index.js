@@ -49,7 +49,7 @@ if (existPackage) {
     sourcePackage = JSON.parse(readPackageFile.toString())
     const packagejsonParser = JSON.parse(packagejson)
     sourcePackage.devDependencies = { ...sourcePackage.devDependencies, ...packagejsonParser.devDependencies }
-    sourcePackage.scripts.prepare = "husky install"
+    // sourcePackage.scripts.prepare = "husky install"
     destPackage = JSON.stringify(sourcePackage)
 } else {
     destPackage = packagejson
