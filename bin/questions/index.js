@@ -1,15 +1,14 @@
 import inquirer from 'inquirer'
 import commintlintConfirm from './commintlintConfirm.js'
 import vueOrReactRawlist from './vueOrReactRawlist.js'
-import {  Observable } from 'rxjs';
+// import {  Observable } from 'rxjs';
 export default async () => {
-    
-      return  inquirer.prompt([
+
+    return inquirer.prompt([
         {
             type: 'confirm',
             name: 'commitlint',
-            message:'是否使用commitlint ?'
-            
+            message: '是否使用commitlint ?'
         },
         {
             type: 'list',
@@ -21,16 +20,27 @@ export default async () => {
                 'recommended'
             ]
         },
-       {
-           type: 'list',
-           name: 'type',
-           message: '选择 vue 或者 react ?',
-           choices: [
-               'vue2',
-               'vue3',
-               'react'
-           ]
-       }
+        {
+            type: 'list',
+            name: 'type',
+            message: '选择 vue 或者 react ?',
+            choices: [
+                'vue2',
+                'vue3',
+                'react'
+            ]
+        },
+        {
+            type: 'list',
+            name: 'loader',
+            default: 'npm',
+            message: '选择包加载器 ?',
+            choices: [
+                'npm',
+                'yarn',
+                'pnpm'
+            ]
+        },
     ])
 
 
@@ -46,7 +56,7 @@ export default async () => {
     //             ]
     //         })
     //     } else if(type === 'react') {
-            
+
     //     }
     //     obs.complete();
     // });
@@ -54,5 +64,5 @@ export default async () => {
     // inquirer.prompt(observe).then((answers) => {
     //     console.log(JSON.stringify(answers, null, '  '));
     // });
-    
+
 }

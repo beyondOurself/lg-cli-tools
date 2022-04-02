@@ -3,10 +3,11 @@ import { execa } from 'execa';
 import chalk from 'chalk'
 import fs from 'fs'
 import questions from './questions/index.js';
-import nameQuestion from  './questions/nameQuestion.js'
+import nameQuestion from './questions/nameQuestion.js'
 import createPackageTemplate from './createPackageTemplate.js'
 import createEslintrcTemplate from './createEslintrcTemplate.js'
 import createCommitmsgTemplate from './createCommitmsgTemplate.js'
+import createEslintignoreTemplate from './createEslintignoreTemplate.js'
 import { copyDir } from './utils/index.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -16,9 +17,10 @@ const __dirname = fileURLToPath(import.meta.url)
 
 const existPackage = await fs.existsSync('./package.json')
 const exitstGit = await fs.existsSync('./.git')
+const exitsEslingignore = await fs.existsSync('./.eslintignore')
 
-let destPackage = null 
-let sourcePackage = null 
+let destPackage = null
+let sourcePackage = null
 let projectName = ''
 
 // 问答
@@ -33,7 +35,7 @@ const answers = await questions()
 // 生成 eslintrc 文件
 
 const eslintrc = createEslintrcTemplate(answers)
-const packagejson = createPackageTemplate({ ...answers, projectName})
+const packagejson = createPackageTemplate({ ...answers, projectName })
 const commitmsg = createCommitmsgTemplate(answers)
 
 
@@ -55,13 +57,18 @@ if (existPackage) {
     destPackage = packagejson
 }
 
+if (!exitsEslingignore) {
+    fs.writeFileSync('./.eslintignore', createEslintignoreTemplate())
+}
 
-fs.writeFileSync('./package.json', destPackage )
 
 
-copyDir(path.resolve(__dirname, "../project"), "./" , (err) => {
+fs.writeFileSync('./package.json', destPackage)
+
+
+copyDir(path.resolve(__dirname, "../project"), "./", (err) => {
     if (!err) {
-     }
+    }
 })
 
 // 初始化 git 
@@ -71,8 +78,23 @@ if (!exitstGit) {
         stdio: [2, 2, 2]
     })
 }
+
+let execaString = ''
+switch (questions.loader) {
+    case 'pnpm':
+        execaString = 'pnpm install'
+        break;
+    case 'yarn':
+        execaString = 'yarn'
+        break;
+
+    default:
+        execaString = 'npm install'
+        break;
+}
+
 // 安装依赖
-await execa("npm install", {
+await execa(execaString, {
     cwd: './',
     stdio: [2, 2, 2]
 })
